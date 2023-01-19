@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.entities;
 
 import java.sql.Timestamp;
 
@@ -21,7 +21,7 @@ import org.hibernate.annotations.*;
  * MyEntity.class).getResultList(); } }
  */
 @Entity
-public class MyEntity {
+public class MyProduct {
 	private Long id;
 	private String name;
 	private String description;

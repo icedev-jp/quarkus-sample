@@ -7,20 +7,21 @@ import java.util.stream.*;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.acme.dto.MyProductDTO;
 import org.apache.commons.csv.*;
 
 /**
  * This abomination was created because I couldn't find a way to auto unmarshall a CSV file.
  */
-public class MyEntryCsvMapper {
+public class MyProductMapperCSV {
 	private final File csv;
 
-	public MyEntryCsvMapper(File csv) {
+	public MyProductMapperCSV(File csv) {
 		this.csv = csv;
 	}
 	
-	protected EntryDTO mapRecordToDto(CSVRecord record) {
-		EntryDTO dto = new EntryDTO();
+	protected MyProductDTO mapRecordToDto(CSVRecord record) {
+		MyProductDTO dto = new MyProductDTO();
 		dto.primaryKey = record.get(0).strip();
 		dto.name = record.get(1).strip();
 		dto.description = record.get(2).strip();
@@ -43,7 +44,7 @@ public class MyEntryCsvMapper {
 		}
 	}
 	
-	public void forEach(Consumer<EntryDTO> fun) {
+	public void forEach(Consumer<MyProductDTO> fun) {
     	try (CSVParser parser = new CSVParser(new FileReader(csv), CSVFormat.DEFAULT)) {
 			Spliterator<CSVRecord> spliter = parser.spliterator();
 			
@@ -54,7 +55,7 @@ public class MyEntryCsvMapper {
 				.forEach(fun);
 			
     	} catch (IOException e) {
-    		throw new WebApplicationException(e.getMessage(), 400);
+    		throw new WebApplicationException(e.getMessage(), 500);
 		}
 	}
 

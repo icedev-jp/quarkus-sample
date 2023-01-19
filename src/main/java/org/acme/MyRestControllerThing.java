@@ -12,22 +12,24 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.acme.dto.MyProductDTO;
+import org.acme.entities.MyProduct;
 import org.jboss.logging.Logger;
 
 import io.quarkus.logging.Log;
 
 @Path("/csv")
-public class MyProductRestResource {
-    private static final Logger LOG = Logger.getLogger(MyProductRestResource.class);
+public class MyRestControllerThing {
+    private static final Logger LOG = Logger.getLogger(MyRestControllerThing.class);
 
 	@Inject
 	EntityManager manager; // TODO I should separate this into another layer
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public EntryDTO get(@QueryParam("RIMARY_KEY") String key) {
+	public MyProductDTO get(@QueryParam("RIMARY_KEY") String key) {
 		Log.info("getting entity " + key);
-		MyEntity entity = manager.find(MyEntity.class, Long.valueOf(key));
+		MyProduct entity = manager.find(MyProduct.class, Long.valueOf(key));
 		if (entity != null) {
 			return convert(entity);
 		} else {
@@ -38,7 +40,7 @@ public class MyProductRestResource {
 	@DELETE
 	@Transactional
 	public void delete(@QueryParam("RIMARY_KEY") String key) {
-		MyEntity entity = manager.find(MyEntity.class, Long.valueOf(key));
+		MyProduct entity = manager.find(MyProduct.class, Long.valueOf(key));
 		if (entity != null) {
 			manager.remove(entity);
 		} else {
@@ -53,8 +55,8 @@ public class MyProductRestResource {
 		try {
 			Log.info("file upload");
 			
-			new MyEntryCsvMapper(csv).forEach((dto) -> {
-				MyEntity ent = convert(dto);
+			new MyProductMapperCSV(csv).forEach((dto) -> {
+				MyProduct ent = convert(dto);
 				manager.persist(ent);
 			});
 		} catch (DateTimeParseException | NumberFormatException | PersistenceException e) {
@@ -66,8 +68,8 @@ public class MyProductRestResource {
 		}
 	}
 
-	private EntryDTO convert(MyEntity entity) {
-		EntryDTO dto = new EntryDTO();
+	private MyProductDTO convert(MyProduct entity) {
+		MyProductDTO dto = new MyProductDTO();
 		dto.primaryKey = entity.getId().toString();
 		dto.name = entity.getName();
 		dto.description = entity.getDescription();
@@ -75,8 +77,8 @@ public class MyProductRestResource {
 		return dto;
 	}
 
-	private MyEntity convert(EntryDTO dto) {
-		MyEntity ent = new MyEntity();
+	private MyProduct convert(MyProductDTO dto) {
+		MyProduct ent = new MyProduct();
 		ent.setId(Long.valueOf(dto.primaryKey));
 		ent.setName(dto.name);
 		ent.setDescription(dto.description);

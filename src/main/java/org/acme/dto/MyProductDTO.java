@@ -1,6 +1,6 @@
-package org.acme;
+package org.acme.dto;
 
-public class EntryDTO {
+public class MyProductDTO {
 	public String primaryKey;
 	public String name;
 	public String description;
