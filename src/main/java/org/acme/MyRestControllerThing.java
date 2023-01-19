@@ -23,14 +23,11 @@ import io.quarkus.logging.Log;
 public class MyRestControllerThing {
     private static final Logger LOG = Logger.getLogger(MyRestControllerThing.class);
 
-	@Inject
-	EntityManager manager; // TODO I should separate this into another layer
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public MyProductDTO get(@QueryParam("RIMARY_KEY") String key) {
 		Log.info("getting entity " + key);
-		MyProduct entity = manager.find(MyProduct.class, Long.valueOf(key));
+		MyProduct entity = MyProduct.findById(Long.valueOf(key));
 		if (entity != null) {
 			return convert(entity);
 		} else {
@@ -41,9 +38,9 @@ public class MyRestControllerThing {
 	@DELETE
 	@Transactional
 	public void delete(@QueryParam("RIMARY_KEY") String key) {
-		MyProduct entity = manager.find(MyProduct.class, Long.valueOf(key));
+		MyProduct entity = MyProduct.findById(Long.valueOf(key));
 		if (entity != null) {
-			manager.remove(entity);
+			entity.delete();
 		} else {
 			throw new RestException("not such entity", 404);
 		}
@@ -60,7 +57,7 @@ public class MyRestControllerThing {
 			new MyProductMapperCSV(csv).forEach((dto) -> {
 				counter.incrementAndGet();
 				MyProduct ent = convert(dto);
-				manager.persist(ent);
+				ent.persist();
 			});
 		} catch (DateTimeParseException | NumberFormatException | PersistenceException e) {
 			throw new RestException("There was a problem in row #" + counter.intValue() + "\n" + e.getMessage(), 400);

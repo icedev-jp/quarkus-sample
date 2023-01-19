@@ -7,21 +7,10 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.*;
 
-/**
- * Example JPA entity.
- *
- * To use it, get access to a JPA EntityManager via injection.
- *
- * {@code @Inject EntityManager em;
- *
- * public void doSomething() { MyEntity entity1 = new MyEntity();
- * entity1.setField("field-1"); em.persist(entity1);
- *
- * List<MyEntity> entities = em.createQuery("from MyEntity",
- * MyEntity.class).getResultList(); } }
- */
+import io.quarkus.hibernate.orm.panache.*;
+
 @Entity
-public class MyProduct {
+public class MyProduct extends PanacheEntityBase {
 	private Long id;
 	private String name;
 	private String description;
@@ -64,7 +53,6 @@ public class MyProduct {
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
-	
 
     @PrePersist
     protected void onCreate() {
