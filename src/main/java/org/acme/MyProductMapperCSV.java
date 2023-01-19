@@ -39,7 +39,7 @@ public class MyProductMapperCSV {
 			
 			if(!entry.equals(valid)) {
 				// TODO maybe throw some sort of parse exception instead
-				throw new WebApplicationException("Wrong header field " + entry + " was expecting " + valid);
+				throw new RestException("Wrong header field " + entry + " was expecting " + valid, 400);
 			}
 		}
 	}
@@ -55,7 +55,7 @@ public class MyProductMapperCSV {
 				.forEach(fun);
 			
     	} catch (IOException e) {
-    		throw new WebApplicationException(e.getMessage(), 500);
+    		throw new RestException(e.getMessage(), 500);
 		}
 	}
 

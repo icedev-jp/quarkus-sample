@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.format.*;
 import java.time.temporal.TemporalAccessor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 import javax.persistence.*;
@@ -33,7 +34,7 @@ public class MyRestControllerThing {
 		if (entity != null) {
 			return convert(entity);
 		} else {
-			throw new WebApplicationException(404);
+			throw new RestException("not such entity", 404);
 		}
 	}
 
@@ -44,7 +45,7 @@ public class MyRestControllerThing {
 		if (entity != null) {
 			manager.remove(entity);
 		} else {
-			throw new WebApplicationException(404);
+			throw new RestException("not such entity", 404);
 		}
 	}
 
@@ -52,19 +53,17 @@ public class MyRestControllerThing {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Transactional
 	public void upload(@FormParam("csv") File csv) throws WebApplicationException {
+		AtomicInteger counter = new AtomicInteger(0);
+		
 		try {
 			Log.info("file upload");
-			
 			new MyProductMapperCSV(csv).forEach((dto) -> {
+				counter.incrementAndGet();
 				MyProduct ent = convert(dto);
 				manager.persist(ent);
 			});
 		} catch (DateTimeParseException | NumberFormatException | PersistenceException e) {
-			// TODO better error handling?
-			// 1. error messages are not included in response object, try building custom response
-			// 2. need to provide information about which CSV entry was faulty
-			// 3. this doesn't seem very elegant as it is now
-			throw new WebApplicationException(e.getMessage(), 400);
+			throw new RestException("There was a problem in row #" + counter.intValue() + "\n" + e.getMessage(), 400);
 		}
 	}
 
