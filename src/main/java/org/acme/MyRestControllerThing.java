@@ -62,6 +62,7 @@ public class MyRestControllerThing {
 		} catch (DateTimeParseException | NumberFormatException | PersistenceException e) {
 			throw new RestException("There was a problem in row #" + counter.intValue() + "\n" + e.getMessage(), 400);
 		}
+		// TODO if persist() fails, transaction will fail on commit after this method exits, need to add custom response for RollbackException
 	}
 
 	private MyProductDTO convert(MyProduct entity) {
